@@ -1,6 +1,6 @@
 module github.com/ntb/claw-sheath/verifier
 
-go 1.25.1
+go 1.25
 
 require (
 	github.com/teilomillet/gollm v0.1.11
