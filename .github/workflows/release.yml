@@ -27,10 +27,10 @@ jobs:
           ./scripts/build_releases.sh
 
       - name: Release
-        # Only publish a GitHub Release when triggered by a tag push
-        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
           files: releases/*
+          generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
