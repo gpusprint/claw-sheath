@@ -32,7 +32,7 @@ You can also enable strict mode, which allows an LLM judge to evaluate the justi
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/antonibertel/claw-sheath/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/gpusprint/claw-sheath/main/install.sh | bash
 ```
 
 To use Claw Sheath, you must configure your AI coding agent/tool to use the `src/cs` wrapper (or inject `src/sheath-env.sh`) as its primary shell environment. 
@@ -42,9 +42,9 @@ To use Claw Sheath, you must configure your AI coding agent/tool to use the `src
 **OpenClaw & Claude Code**
 
 ```bash
-cs openclaw agent --agent main --message "Run rm important.txt"
+cs openclaw agent --agent main --message "Run rm text.txt"
 # OR
-cs claude
+cs claude -p "Please run rm text.txt"
 ```
 
 **Antigravity**

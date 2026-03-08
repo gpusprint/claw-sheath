@@ -44,7 +44,7 @@ rm -rf "$INSTALL_DIR"
 # Create installation directory
 mkdir -p "$INSTALL_DIR"
 
-GITHUB_REPO="antonibertel/claw-sheath"
+GITHUB_REPO="gpusprint/claw-sheath"
 
 echo "Retrieving Claw Sheath repository files..."
 if [ -d "src" ] && [ -f "config.yml" ]; then
