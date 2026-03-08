@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 
 # Determine our location
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
@@ -7,25 +8,25 @@ ENV_FILE="${SCRIPT_DIR}/sheath-env.sh"
 export SHELL="$SCRIPT_DIR/cs"
 export BASH_ENV="$ENV_FILE"
 
-# If we are invoked as an interactive/login shell or with bash flags (e.g. by an agent's PTY)
+# If invoked as a shell (either 0 args for interactive, or -c/-i/-l flags)
 if [[ $# -eq 0 ]] || [[ "$1" == -* ]]; then
-    # Bash only auto-sources BASH_ENV for non-interactive shells (like bash -c).
-    # If it's an interactive shell, we explicitly inject our environment.
     if [[ -f "$ENV_FILE" ]]; then
         source "$ENV_FILE"
-    else
+    elif [[ "$1" == -* ]]; then
         echo -e "\x1b[31mclaw-sheath error:\x1b[0m Environment file not found at $ENV_FILE" >&2
         exit 1
     fi
     exec bash "$@"
 else
-    # Invoked as a launcher wrapper (e.g. `cs openclaw`). 
-    # Do NOT source ENV_FILE here, otherwise we pollute the environment with BASH_FUNC_* 
-    # which crashes Node/Go programs that strictly parse env vars!
-    if [[ $# -eq 0 ]]; then
-        echo "Usage: cs <command_to_protect>"
-        echo "Example: cs openclaw agent --agent main"
-        exit 1
+    # Claude-specific overrides to force Claude to use our proxy for tool-based commands
+    export CLAUDE_CODE_SHELL="$SCRIPT_DIR/cs"
+    export CLAUDE_CODE_SHELL_PREFIX="$SCRIPT_DIR/cs -c"
+
+    # Invoked as a launcher wrapper (e.g. `cs openclaw` or `cs open -a Antigravity`). 
+    # BASH_ENV handles the environment injection for subshells spawned by the process.
+    if [[ "$1" == "open" ]]; then
+        exec "$1" --env SHELL="$SCRIPT_DIR/cs" --env BASH_ENV="$ENV_FILE" "${@:2}"
+    else
+        exec "$@"
     fi
-    exec "$@"
 fi
